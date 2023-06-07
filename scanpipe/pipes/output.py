@@ -723,19 +723,15 @@ def to_attribution(project):
         package_data["package_url"] = package.package_url
         if package.declared_license_expression:
             parsed = licensing.parse(package.declared_license_expression)
-            license_symbols.extend(get_package_expression_symbols(parsed))
-            expression_links = get_expression_as_attribution_links(parsed)
-            package_data["expression_links"] = expression_links
+            license_symbols = get_package_expression_symbols(parsed)
+            licenses = [symbol.wrapped for symbol in set(license_symbols)]
+            package_data["licenses"] = licenses
 
         packages_data.append(package_data)
-
-    licenses = [symbol.wrapped for symbol in set(license_symbols)]
-    licenses.sort(key=attrgetter("spdx_license_key"))
 
     context = {
         "project": project_data,
         "packages": packages_data,
-        "licenses": licenses,
     }
 
     if template_string := project.get_env("attribution_template"):
