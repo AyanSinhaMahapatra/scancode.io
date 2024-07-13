@@ -1,0 +1,14 @@
+product_name: scancode.io
+product_version: '2.1'
+ignored_patterns:
+ - 'docs/*'
+ - 'etc/*'
+ - 'scanpipe/tests/data/*'
+ - '.github/*'
+ignored_dependency_scopes:
+ - package_type: npm
+   scope: docs
+ - package_type: pypi
+   scope: test
+ - package_type: pypi
+   scope: testing

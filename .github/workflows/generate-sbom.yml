@@ -24,6 +24,9 @@ jobs:
       - name: Run deplock
         run: ./deplock-linux-amd64 pypi . && rm deplock-linux-amd64
 
+      - name: Move scancode config
+        run: rm docs/scancode-config.yml && mv .github/workflows/sbom-config/scancode-config.yml .
+
       - name: Run inspect packages
         run: docker run --rm -v "$(pwd)":/code ghcr.io/nexb/scancode.io:latest sh -c "run inspect_packages:StaticResolver /code" > results.json
 
