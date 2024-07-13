@@ -1,0 +1,34 @@
+name: Generate a SBOM for scancode.io
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Download deplock
+        run: curl -LO https://github.com/nexB/dependency-inspector/releases/latest/download/deplock-linux-amd64
+
+      - name: Give deplock execute permission
+        run: chmod +x deplock-linux-amd64
+
+      - name: Run deplock
+        run: ./deplock-linux-amd64 pypi . && rm deplock-linux-amd64
+
+      - name: Run inspect packages
+        run: docker run --rm -v "$(pwd)":/code ghcr.io/nexb/scancode.io:latest sh -c "run inspect_packages:StaticResolver /code" > results.json
+
+      - name: Upload built archives
+        uses: actions/upload-artifact@v4
+        with:
+          name: scan-results
+          path: results.json
